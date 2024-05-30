@@ -65,7 +65,7 @@ playwright install firefox # downloads only firefox ~85mb
 echo "Setup complete. Do you want to run the python script now? (y\n)"
 read LAUNCH
 
-while [ $LAUNCH != "y" ] || [ $LAUNCH != "n" ]; do
+while [ $LAUNCH != "y" ] && [ $LAUNCH != "n" ]; do
     echo "Only 'y' or 'n' are accepted responses. Please try again."
     read LAUNCH
 done
