@@ -7,7 +7,7 @@ read SCHEDULE
 
 while [ $SCHEDULE != "y" ] && [ $SCHEDULE != "n" ]; do
     echo "Only 'y' or 'n' are accepted responses. Please try again."
-    read user_number
+    read SCHEDULE
 done
 
 if [ $SCHEDULE == "y" ]; then
@@ -52,6 +52,30 @@ if $SCHEDULE; then
         echo "New cron job added successfully."
     fi
 fi
+
+# writing config to config.cfg
+echo "twitterscraper.py requires a twitter account username and password to scrape data. If you do not provide these now, you must manually create and enter them in a config.cfg later."
+echo "Do you wish to provide these now?"
+
+read BOT_NOW
+while [ $BOT_NOW != "y" ] && [ $BOT_NOW != "n" ]; do
+    echo "Only 'y' or 'n' are accepted responses. Please try again."
+    read BOT_NOW
+done
+
+if [ $BOT_NOW == "y" ]; then
+    echo "Please provide the twitter bot username. Ensure this is correct, there will be no re-try."
+    read BOT_USERNAME
+    
+    echo "Please provide the twitter bot password. Ensure this is correct, there will be no re-try."
+    read BOT_PASSWORD
+    
+    echo "Writing details to config.cfg"
+    echo "[CONFIG]" > config.cfg
+    echo "botusername = $BOT_USERNAME" >> config.cfg
+    echo "botpassword = $BOT_PASSWORD" >> config.cfg
+
+
 
 # setting up dependencies
 echo "Setting up python virtual environment and downloading Python requirements: playwright (dep: Nightly firefox) and pandas."

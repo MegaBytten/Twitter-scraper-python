@@ -18,27 +18,31 @@
 # Further requirements / setup:
 # > Running this script requires a twitter account
 # > Input twitter account username/password into BOT_X_{USERNAME/PSWD}
+# # # # # # # # #  # # # # # # # # # #
+
+
+# # # # IMPORTS: DO NOT CHANGE # # # #
+from datetime import date, datetime
+from pathlib import Path
+import configparser
+
+import pandas as pd
+from playwright.sync_api import sync_playwright # sync_playwright is actually a function, returns contxt manager
+
 
 # Start clock for runtime assessment
 startTime = datetime.now()
 # # # # # # # # #  # # # # # # # # # #
 
 
-# # # # IMPORTS: DO NOT CHANGE # # # #
-import pandas as pd
-from playwright.sync_api import sync_playwright # sync_playwright is actually a function, returns contxt manager
-from datetime import date, datetime
-# # # # # # # # #  # # # # # # # # # #
-
-
 # # # #  CONFIG: MUST CHANGE  # # # #
 # Playwright (python web-automation library) is headless (no UI) by default
-UI_BOOL = True;
+UI_BOOL = False
 
-# Insert your BOT twitter account's username
+# BOT account name is taken from config.cfg file - see macosinit.sh or manually create
 BOT_X_USERNAME = ""
 
-# insert your BOT twitter account's password
+# BOT password is taken from config.cfg file - see macosinit.sh or manually create
 BOT_X_PSWD = ""
 
 # Change the selected "search" query on twitter. Synonymous with "topic"
@@ -59,9 +63,31 @@ BATCHES = 100
 # GLOBAL DATA VARS
 usernames, post_content, times, dates = [], [], [], []
 
+# Function checks if all required config / dependencies are ready
+def initChecks():
+  # CHECK IF CONFIG FILE EXISTS
+  if not Path("config.cfg").is_file():
+      exit("config.cfg not found.")
+
+  # Read BOT_USERNAME and BOT_PASSWORD from config.cfg
+  config = configparser.RawConfigParser()
+  config.read("config.cfg")
+
+  if not config.has_section("CONFIG"):
+    exit("CONFIG section in config.cfg not found")
+
+  if not config.has_option("CONFIG", "botusername") or not config.has_option("CONFIG", "botpassword"):
+    exit("X Bot username/password not provided")
+      
+  BOT_X_USERNAME = config.get("CONFIG", "botusername")
+  BOT_X_PSWD = config.get("CONFIG", "botpassword")
+  
+  # Create data folder to house data if not exists:
+  Path("data/").mkdir(parents=True, exist_ok=True)
+
 def main():
-  global usernames, post_content, times, dates
-  #temp
+  global usernames, post_content, times, dates, BOT_X_USERNAME, BOT_X_PSWD
+
   with sync_playwright() as p:
     
     # Launch browser, with either headless or UI enabled
@@ -169,6 +195,7 @@ def batch_add_posts(page):
     times.append(timedate[1])
 
 if __name__ == '__main__':
+  initChecks()
   main()
     
   time_taken = datetime.now() - startTime
