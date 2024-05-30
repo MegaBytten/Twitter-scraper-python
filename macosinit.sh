@@ -55,7 +55,7 @@ fi
 
 # writing config to config.cfg
 echo "twitterscraper.py requires a twitter account username and password to scrape data. If you do not provide these now, you must manually create and enter them in a config.cfg later."
-echo "Do you wish to provide these now?"
+echo "Do you wish to provide these now? (y/n)"
 
 read BOT_NOW
 while [ $BOT_NOW != "y" ] && [ $BOT_NOW != "n" ]; do
@@ -74,8 +74,7 @@ if [ $BOT_NOW == "y" ]; then
     echo "[CONFIG]" > config.cfg
     echo "botusername = $BOT_USERNAME" >> config.cfg
     echo "botpassword = $BOT_PASSWORD" >> config.cfg
-
-
+fi
 
 # setting up dependencies
 echo "Setting up python virtual environment and downloading Python requirements: playwright (dep: Nightly firefox) and pandas."
