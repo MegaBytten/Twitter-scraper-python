@@ -1,9 +1,29 @@
 #!/bin/sh
 # NOTICE: Requires chmod +x ./macosinit.sh
 
-# CONFIG
-SCHEDULE = false #OPTIONAL: Change to TRUE to schedule script to run every hour using crontab. Clear in future using crontab -r
-ABSOLUTE_PATH_TO_SCRIPT = "~/Downloads/project_folder/twitterscraper.py" #REQUIRED: Change to absolute path of your python script.
+# Requesting if want schedule
+echo "Welcome to twitterscraper.py setup. Do you wish to schedule the script for hourly run? You can remove stop it by removing it from crontab at any time with $ crontab -r. (y/n)"
+read SCHEDULE
+
+while [ $SCHEDULE != "y" ] && [ $SCHEDULE != "n" ]; do
+    echo "Only 'y' or 'n' are accepted responses. Please try again."
+    read user_number
+done
+
+if [ $SCHEDULE == "y" ]; then
+    SCHEDULE=true
+else
+    SCHEDULE=false
+fi
+
+# Requesting file path
+echo "Schedule = $SCHEDULE. Please provide the absolute file path of the twitterscraper.py file. This can be done from Finder on MacOS:"
+read ABSOLUTE_PATH_TO_SCRIPT
+
+while [ ABSOLUTE_PATH_TO_SCRIPT == "" ]; do
+    echo "Please provide non-empty value."
+    read ABSOLUTE_PATH_TO_SCRIPT
+done
 
 # Schedule cron job
 if $SCHEDULE; then
@@ -33,11 +53,30 @@ if $SCHEDULE; then
     fi
 fi
 
+# setting up dependencies
+echo "Setting up python virtual environment and downloading Python requirements: playwright (dep: Nightly firefox) and pandas."
 python3 -m venv ./ # set up new venv for python installs, ~1 min
 source bin/activate # activate venv
 pip install playwright pandas  # ~60mb in total
-playwright install # downloads chromium, firefox, webkit browsers ~unsure mb
+playwright install firefox # downloads only firefox ~85mb
 
-#run python script right now
-python3 twitterscraper.py
-echo "Scheduled script every hour: $SCHEDULE\nSet up venv. Run script in future with $ python3 twitterscraper.py"
+
+# Requesting if want run script now
+echo "Setup complete. Do you want to run the python script now? (y\n)"
+read LAUNCH
+
+while [ $LAUNCH != "y" ] || [ $LAUNCH != "n" ]; do
+    echo "Only 'y' or 'n' are accepted responses. Please try again."
+    read LAUNCH
+done
+
+if [ $LAUNCH == "y" ]; then
+    LAUNCH=true
+else
+    LAUNCH=false
+fi
+
+if $LAUNCH; then
+    python3 twitterscraper.py
+
+echo "Setup completed. Run script manually with $ python3 twitterscraper.py"
