@@ -101,5 +101,6 @@ fi
 
 if $LAUNCH; then
     python3 twitterscraper.py
+fi
 
 echo "Setup completed. Run script manually with $ python3 twitterscraper.py"
