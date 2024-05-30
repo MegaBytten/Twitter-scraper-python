@@ -4,20 +4,12 @@
 # > =~ 50 unique posts / min
 # > highly contingent on how active your topics (queries) are, if slow-posting inactive searches then more redundant duplicates which are removed
 
-# Project setup and installation:
-# Create new venv:
-# $ cd /project/directory
-# $ python -m venv ./
-# $ cd /working/directory
+# Dependencies and installation already handled in macosinit.sh
+# Inlcuding twitter bot account username/password into config.cfg
+
+# Running script
 # $ source bin/activate
-
-# Install required packages:
-# > pip install playwright pandas 
-# > playwright install # downloads chromium, firefox, webkit browsers
-
-# Further requirements / setup:
-# > Running this script requires a twitter account
-# > Input twitter account username/password into BOT_X_{USERNAME/PSWD}
+# MacOS: $ python3 twitterscraper.py
 # # # # # # # # #  # # # # # # # # # #
 
 
@@ -36,14 +28,8 @@ startTime = datetime.now()
 
 
 # # # #  CONFIG: MUST CHANGE  # # # #
-# Playwright (python web-automation library) is headless (no UI) by default
-UI_BOOL = False
-
-# BOT account name is taken from config.cfg file - see macosinit.sh or manually create
-BOT_X_USERNAME = ""
-
-# BOT password is taken from config.cfg file - see macosinit.sh or manually create
-BOT_X_PSWD = ""
+# Playwright has headless = True by default, meaning no UI on browser.
+HEADLESS = False
 
 # Change the selected "search" query on twitter. Synonymous with "topic"
 # > Required URL-encoded: This text will be injected directly to the twitter q="query" URL, so ensure special characters are URL encoded
@@ -63,8 +49,14 @@ BATCHES = 100
 # GLOBAL DATA VARS
 usernames, post_content, times, dates = [], [], [], []
 
+# Bot username and password already taken from config.cfg - do not change here.
+BOT_X_USERNAME = ""
+BOT_X_PSWD = ""
+
 # Function checks if all required config / dependencies are ready
 def initChecks():
+  global BOT_X_USERNAME, BOT_X_PSWD
+  
   # CHECK IF CONFIG FILE EXISTS
   if not Path("config.cfg").is_file():
       exit("config.cfg not found.")
@@ -86,12 +78,12 @@ def initChecks():
   Path("data/").mkdir(parents=True, exist_ok=True)
 
 def main():
-  global usernames, post_content, times, dates, BOT_X_USERNAME, BOT_X_PSWD
+  global usernames, post_content, times, dates
 
   with sync_playwright() as p:
     
     # Launch browser, with either headless or UI enabled
-    browser = p.firefox.launch(headless=UI_BOOL)
+    browser = p.firefox.launch(headless=HEADLESS)
     
     # iterates through queries
     for QUERY in QUERIES:
@@ -102,16 +94,16 @@ def main():
       #Navigate to X and sign in
       page = browser.new_page()
       page.goto(f'https://x.com/search?q={QUERY}&f=live')
-      page.wait_for_timeout(1000) # wait 1s
+      page.wait_for_timeout(2000) # wait 1s
       
       page.locator('input[name="text"]').fill(BOT_X_USERNAME)
-      page.wait_for_timeout(1500)
+      page.wait_for_timeout(2000)
       page.get_by_role("button", name="Next").click()
 
-      page.wait_for_timeout(1420)
+      page.wait_for_timeout(2000)
       
       page.locator('input[name="password"]').fill(BOT_X_PSWD)
-      page.wait_for_timeout(1500)
+      page.wait_for_timeout(2000)
       page.get_by_role("button", name="Log in").click()
       
       page.wait_for_timeout(7500) # wait 7.5 seconds for page to load
@@ -139,7 +131,7 @@ def main():
       DATE = date.today().strftime("%Y%m%d")
       TIME = datetime.now().strftime("%H%M%S")
       TIMESTAMP = str(DATE) + "_" + TIME
-      df.to_csv(f"twitter_scrape_{QUERY}_{TIMESTAMP}.csv", index=False)
+      df.to_csv(f"data/twitter_scrape_{QUERY}_{TIMESTAMP}.csv", index=False)
       print('\n')
     
     # Done with queries loop
