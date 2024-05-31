@@ -51,7 +51,8 @@ while $MULTI; do
     read BOT_PASSWORD
     
     echo "\nWriting details to config.cfg\n"
-    echo "[$COUNT]" > config.cfg
+    echo "\n]" >> config.cfg
+    echo "[$COUNT]" >> config.cfg
     COUNT=$((COUNT+1)) # increment count by 1
     echo "botusername = $BOT_USERNAME" >> config.cfg
     echo "botpassword = $BOT_PASSWORD" >> config.cfg
