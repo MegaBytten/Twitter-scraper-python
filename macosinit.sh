@@ -9,6 +9,8 @@ echo "twitterscraper.py requires a twitter account username and password to scra
 echo "Do you wish to provide these now? (y/n)\n"
 
 read BOT_NOW
+
+COUNT=1
 while [ $BOT_NOW != "y" ] && [ $BOT_NOW != "n" ]; do
     echo "Only 'y' or 'n' are accepted responses. Please try again."
     read BOT_NOW
@@ -22,10 +24,51 @@ if [ $BOT_NOW == "y" ]; then
     read BOT_PASSWORD
     
     echo "\nWriting details to config.cfg\n"
-    echo "[CONFIG]" > config.cfg
+    echo "[$COUNT]" > config.cfg
+    COUNT=$((COUNT+1)) # increment count by 1
     echo "botusername = $BOT_USERNAME" >> config.cfg
     echo "botpassword = $BOT_PASSWORD" >> config.cfg
 fi
+
+echo "Do you wish to set up multiple bots now in order to use distributedtwitterscraper.py (y/n)?"
+read MULTI
+while [ $MULTI != "y" ] && [ $MULTI != "n" ]; do
+    echo "Only 'y' or 'n' are accepted responses. Please try again."
+    read MULTI
+done
+
+if [ $MULTI == "y" ]; then
+    MULTI=true
+else
+    MULTI=false
+fi
+
+while $MULTI; do
+    echo "\nPlease provide the twitter bot username. Ensure this is correct, there will be no re-try."
+    read BOT_USERNAME
+    
+    echo "\nPlease provide the twitter bot password. Ensure this is correct, there will be no re-try."
+    read BOT_PASSWORD
+    
+    echo "\nWriting details to config.cfg\n"
+    echo "[$COUNT]" > config.cfg
+    COUNT=$((COUNT+1)) # increment count by 1
+    echo "botusername = $BOT_USERNAME" >> config.cfg
+    echo "botpassword = $BOT_PASSWORD" >> config.cfg
+    
+    echo "Bot added to config.cfg - do you wish to create another? (y/n) "
+    read MULTI
+    while [ $MULTI != "y" ] && [ $MULTI != "n" ]; do
+        echo "Only 'y' or 'n' are accepted responses. Please try again."
+        read MULTI
+    done
+
+    if [ $MULTI == "y" ]; then
+        MULTI=true
+    else
+        MULTI=false
+    fi
+done
 
 # setting up dependencies
 echo "Setting up python virtual environment and downloading Python requirements: playwright (dep: Nightly firefox) and pandas."
