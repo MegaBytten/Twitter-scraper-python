@@ -27,12 +27,9 @@ startTime = datetime.now()
 # # # # # # # # #  # # # # # # # # # #
 
 
-# # # #  CONFIG: MUST CHANGE  # # # #
-# Playwright has headless = True by default, meaning no UI on browser.
-HEADLESS = False
-
+# # # #  CONFIG: Can change  # # # #
 # Number of iterations of posts. Each batch takes approximately 6s to run, generates ~ 5 unique posts
-BATCHES = 80
+BATCHES = 50
 # # # # # # # # #  # # # # # # # # # #
 
 
@@ -40,6 +37,7 @@ BATCHES = 80
 # GLOBAL DATA VARS
 QUERY = input("Enter URL-encoded search query: ")
 BOT_NUM = input("Which bot # would you like to use (see config.cfg) (1-5): ")
+HEADLESS = input('Run browser in headless (no UI) mode? (y/n)').lower().strip() == 'y' # HEADLESS = False means UI visible
 usernames, post_content, times, dates = [], [], [], []
 
 # Bot username and password already taken from config.cfg - do not change here.

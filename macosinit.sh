@@ -51,7 +51,7 @@ while $MULTI; do
     read BOT_PASSWORD
     
     echo "\nWriting details to config.cfg\n"
-    echo "\n]" >> config.cfg
+    echo "\n" >> config.cfg
     echo "[$COUNT]" >> config.cfg
     COUNT=$((COUNT+1)) # increment count by 1
     echo "botusername = $BOT_USERNAME" >> config.cfg
@@ -80,7 +80,7 @@ playwright install firefox # downloads only firefox ~85mb
 
 
 # Requesting if want run script now
-echo "\n\nSetup complete. Do you want to run the python script now? (y\n)"
+echo "\n\nSetup complete. Do you want to run the python script now?(y/n)"
 read LAUNCH
 
 while [ $LAUNCH != "y" ] && [ $LAUNCH != "n" ]; do

@@ -28,8 +28,6 @@ startTime = datetime.now()
 
 
 # # # #  CONFIG: MUST CHANGE  # # # #
-# Playwright has headless = True by default, meaning no UI on browser.
-HEADLESS = False
 
 # Change the selected "search" query on twitter. Synonymous with "topic"
 # > Required URL-encoded: This text will be injected directly to the twitter q="query" URL, so ensure special characters are URL encoded
@@ -41,12 +39,13 @@ QUERIES = [
 ]
 
 # Number of iterations of posts. Each batch takes approximately 6s to run, generates ~ 5 unique posts
-BATCHES = 100
+BATCHES = 50
 # # # # # # # # #  # # # # # # # # # #
 
 
 # # # # # #  SCRIPT  # # # # #
 # GLOBAL DATA VARS
+HEADLESS = input('Run browser in headless (no UI) mode? (y/n)').lower().strip() == 'y' # HEADLESS = False means UI visible
 usernames, post_content, times, dates = [], [], [], []
 
 # Bot username and password already taken from config.cfg - do not change here.
