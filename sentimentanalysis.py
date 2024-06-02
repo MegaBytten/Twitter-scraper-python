@@ -39,7 +39,7 @@ grouped = df.groupby(['query', 'date'])['sentiment'].agg(
 ).reset_index()
 
 # Create the plot
-plt.figure(figsize=(5, 4), dpi=150) 
+plt.figure(figsize=(18, 10), dpi=150) 
 
 # Loop through each query and plot
 for query in grouped['query'].unique():
@@ -50,58 +50,15 @@ for query in grouped['query'].unique():
 # Customize the plot
 plt.title('Sentiment Over Time by Topic')
 plt.xlabel('Date Hour')
-plt.xticks(rotation=20)
+plt.xticks(rotation=-45, rotation_mode="anchor", ha="left", fontsize=8)
+
 plt.ylabel('Mean Sentiment (Standard Deviation)')
 plt.ylim(-1, 1)
 
 plt.legend()
 plt.grid(True)
-plt.show()
 
+plt.savefig('twittersentiment.png')
 
-
-df["sentiment", df['query'] == "artificialintelligence"] 
-
-plt.boxplot(
-    df[df['query'] == "artificialintelligence"]["sentiment"]
-)
-
-plt.boxplot(
-    df[df['query'] == "politics"]["sentiment"]
-)
-
-plt.show()
-
-
-# Create the plot
-plt.figure(figsize=(14, 8))
-
-# Loop through each query and plot
-for query in grouped['query'].unique():
-    query_data = grouped[grouped['query'] == query]
-    plt.plot(query_data['date'], query_data['median'], label=f'{query} Median')
-    plt.fill_between(query_data['date'], query_data['q1'], query_data['q3'], alpha=0.2)
-
-
-
-
-
-print(pd.concat([df1, df2]))
-
-
-
-
-df = pd.read_csv('twitter_scrape_20240529_215430.csv')
-
-
-
-print(plt.boxplot(df["sentiment"]))
-
-print(df["sentiment"])
-
-
-# TODO next!
-"""
-> Need to add re-try if repeatedly getting failed reads.
-> Because twitter limiting my browsing --> exhausted after 
-"""
+#Save cleaned df
+df.to_csv('clean_twitterdata_sentiment.csv')
