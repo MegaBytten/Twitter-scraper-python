@@ -47,30 +47,7 @@ usernames, post_content, times, dates = [], [], [], []
 BOT_X_USERNAME = ""
 BOT_X_PSWD = ""
 
-# Function checks if all required config / dependencies are ready
-def initChecks():
-  global BOT_X_USERNAME, BOT_X_PSWD
-  
-  # CHECK IF CONFIG FILE EXISTS
-  if not Path("config.cfg").is_file():
-      exit("config.cfg not found. Exiting.")
-
-  # Read BOT_USERNAME and BOT_PASSWORD from config.cfg
-  config = configparser.RawConfigParser()
-  config.read("config.cfg")
-
-  if not config.has_section(BOT_NUM):
-    exit(f"{BOT_NUM} section in config.cfg not found. Exiting.")
-
-  if not config.has_option(BOT_NUM, "botusername") or not config.has_option(BOT_NUM, "botpassword"):
-    exit("X Bot username/password not provided. Exiting.")
-      
-  BOT_X_USERNAME = config.get(BOT_NUM, "botusername")
-  BOT_X_PSWD = config.get(BOT_NUM, "botpassword")
-  
-  # Create data folder to house data if not exists:
-  Path("data/").mkdir(parents=True, exist_ok=True)
-
+# function checking if script was called with command-line arguments for automation
 def cliChecks():
   global QUERY, BOT_NUM, HEADLESS
   print("hello!")
@@ -97,6 +74,30 @@ def cliChecks():
   # check if headless was provided y/n
   if HEADLESS != 'y' or HEADLESS != 'n':
       exit("headless not provided as y/n. Exiting.")
+
+# Function checks if all required config / dependencies are ready
+def initChecks():
+  global BOT_X_USERNAME, BOT_X_PSWD
+  
+  # CHECK IF CONFIG FILE EXISTS
+  if not Path("config.cfg").is_file():
+      exit("config.cfg not found. Exiting.")
+
+  # Read BOT_USERNAME and BOT_PASSWORD from config.cfg
+  config = configparser.RawConfigParser()
+  config.read("config.cfg")
+
+  if not config.has_section(BOT_NUM):
+    exit(f"{BOT_NUM} section in config.cfg not found. Exiting.")
+
+  if not config.has_option(BOT_NUM, "botusername") or not config.has_option(BOT_NUM, "botpassword"):
+    exit("X Bot username/password not provided. Exiting.")
+      
+  BOT_X_USERNAME = config.get(BOT_NUM, "botusername")
+  BOT_X_PSWD = config.get(BOT_NUM, "botpassword")
+  
+  # Create data folder to house data if not exists:
+  Path("data/").mkdir(parents=True, exist_ok=True)
   
 
 def main():
@@ -208,8 +209,8 @@ def batch_add_posts(page):
     times.append(timedate[1])
 
 if __name__ == '__main__':
-  initChecks()
   cliChecks()
+  initChecks()
   main()
     
   time_taken = datetime.now() - startTime
