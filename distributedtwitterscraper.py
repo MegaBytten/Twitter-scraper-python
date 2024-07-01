@@ -38,7 +38,7 @@ BATCHES = 50
 # # # # # #  SCRIPT  # # # # #
 # GLOBAL DATA VARS
 QUERY, BOT_NUM = None, None
-HEADLESS = 'y'
+HEADLESS = True
 # BOT_NUM = input("Which bot # would you like to use (see config.cfg) (1-5): ")
 # HEADLESS = input('Run browser in headless (no UI) mode? (y/n)').lower().strip() == 'y' # HEADLESS = False means UI visible
 usernames, post_content, times, dates = [], [], [], []
@@ -55,7 +55,7 @@ def cliChecks():
     print("Incorrect file usage. Correct file usage: [/python3 distributedtwitterscraper.py query bot_number headless], where bot_number is a numeric value corresponding to config.cfg, and headless is y/n.")
     QUERY = input("Enter URL-encoded search query: ")
     BOT_NUM = input("Which bot # would you like to use (see config.cfg) (1-5): ")
-    HEADLESS = input('Run browser in headless (no UI) mode? (y/n): ').lower().strip() == 'y' # HEADLESS = False means UI visible
+    headless_input = input('Run browser in headless (no UI) mode? (y/n): ').lower().strip() == 'y' # HEADLESS = False means UI visible
   
   else:
     
@@ -66,13 +66,15 @@ def cliChecks():
   # SANITIZING INPUTS:
   # check if BOT_NUM was provided as int
   try:
-      BOT_NUM = int(BOT_NUM)
+    int(BOT_NUM)
   except ValueError:
       exit("Bot number provided is not an integer. Exiting.")
   
   # check if headless was provided y/n
-  if HEADLESS != 'y' and HEADLESS != 'n':
-      exit("headless not provided as y/n. Exiting.")
+  if headless_input == 'y': HEADLESS == True
+  elif headless_input == 'n': HEADLESS == False
+  else: exit("headless not provided as y/n. Exiting.")
+  
 
 # Function checks if all required config / dependencies are ready
 def initChecks():
