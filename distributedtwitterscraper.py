@@ -72,7 +72,7 @@ def cliChecks():
       exit("Bot number provided is not an integer. Exiting.")
   
   # check if headless was provided y/n
-  if HEADLESS != 'y' or HEADLESS != 'n':
+  if HEADLESS != 'y' and HEADLESS != 'n':
       exit("headless not provided as y/n. Exiting.")
 
 # Function checks if all required config / dependencies are ready
