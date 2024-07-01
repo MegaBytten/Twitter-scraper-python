@@ -1,7 +1,7 @@
 from pathlib import Path
 import re, string
 from datetime import date, datetime
-
+import ssl # required for bypassing nltk download ssl check
 import nltk
 from nltk.tokenize import word_tokenize
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
@@ -39,6 +39,13 @@ df["hours"] = df["time"].apply(lambda time: time[0]+time[1]+":00")
 df['date'] = df.apply(lambda row: f"{row['raw_date']} {row['hours']}", axis=1)
 
 #### Language Processing: Init / Requirements
+try:
+    _create_unverified_https_context = ssl._create_unverified_context
+except AttributeError:
+    pass
+else:
+    ssl._create_default_https_context = _create_unverified_https_context
+
 nltk.download('punkt') # used for word-tokenization, PUNKT also comes with sentence tokenization
 nltk.download('wordnet') # lexical db for english words - improved context
 nltk.download('averaged_perceptron_tagger') # - contexual POS tagger algorithm
