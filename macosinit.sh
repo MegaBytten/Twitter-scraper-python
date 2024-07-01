@@ -75,8 +75,8 @@ done
 echo "Setting up python virtual environment and downloading Python requirements: playwright (dep: Nightly firefox) and pandas."
 python3 -m venv ./ # set up new venv for python installs, ~1 min
 source bin/activate # activate venv
-pip install playwright pandas textblob numpy matplotlib # ~100mb in total
-playwright install firefox # downloads only firefox ~85mb
+pip install -r requirements.txt # download all files ~ 100Mb minus nltk.download()
+playwright install firefox # downloads only firefox browser ~85mb
 
 
 # Requesting if want run script now
