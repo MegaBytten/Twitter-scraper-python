@@ -17,6 +17,9 @@
 from datetime import date, datetime
 from pathlib import Path
 import configparser
+import sys
+
+print(sys.argv)
 
 import pandas as pd
 from playwright.sync_api import sync_playwright # sync_playwright is actually a function, returns contxt manager
@@ -35,9 +38,10 @@ BATCHES = 50
 
 # # # # # #  SCRIPT  # # # # #
 # GLOBAL DATA VARS
-QUERY = input("Enter URL-encoded search query: ")
-BOT_NUM = input("Which bot # would you like to use (see config.cfg) (1-5): ")
-HEADLESS = input('Run browser in headless (no UI) mode? (y/n)').lower().strip() == 'y' # HEADLESS = False means UI visible
+QUERY, BOT_NUM = None, None
+HEADLESS = 'y'
+# BOT_NUM = input("Which bot # would you like to use (see config.cfg) (1-5): ")
+# HEADLESS = input('Run browser in headless (no UI) mode? (y/n)').lower().strip() == 'y' # HEADLESS = False means UI visible
 usernames, post_content, times, dates = [], [], [], []
 
 # Bot username and password already taken from config.cfg - do not change here.
@@ -50,23 +54,51 @@ def initChecks():
   
   # CHECK IF CONFIG FILE EXISTS
   if not Path("config.cfg").is_file():
-      exit("config.cfg not found.")
+      exit("config.cfg not found. Exiting.")
 
   # Read BOT_USERNAME and BOT_PASSWORD from config.cfg
   config = configparser.RawConfigParser()
   config.read("config.cfg")
 
   if not config.has_section(BOT_NUM):
-    exit(f"{BOT_NUM} section in config.cfg not found")
+    exit(f"{BOT_NUM} section in config.cfg not found. Exiting.")
 
   if not config.has_option(BOT_NUM, "botusername") or not config.has_option(BOT_NUM, "botpassword"):
-    exit("X Bot username/password not provided")
+    exit("X Bot username/password not provided. Exiting.")
       
   BOT_X_USERNAME = config.get(BOT_NUM, "botusername")
   BOT_X_PSWD = config.get(BOT_NUM, "botpassword")
   
   # Create data folder to house data if not exists:
   Path("data/").mkdir(parents=True, exist_ok=True)
+
+def cliChecks():
+  global QUERY, BOT_NUM, HEADLESS
+  print("hello!")
+  
+  if len(sys.argv) != 4:
+    print("Incorrect file usage. Correct file usage: [/python3 distributedtwitterscraper.py query bot_number headless], where bot_number is a numeric value corresponding to config.cfg, and headless is y/n.")
+    QUERY = input("Enter URL-encoded search query: ")
+    BOT_NUM = input("Which bot # would you like to use (see config.cfg) (1-5): ")
+    HEADLESS = input('Run browser in headless (no UI) mode? (y/n): ').lower().strip() == 'y' # HEADLESS = False means UI visible
+  
+  else:
+    
+    QUERY = sys.argv[1]
+    BOT_NUM = sys.argv[2]
+    HEADLESS = sys.argv[3]
+  
+  # SANITIZING INPUTS:
+  # check if BOT_NUM was provided as int
+  try:
+      BOT_NUM = int(BOT_NUM)
+  except ValueError:
+      exit("Bot number provided is not an integer. Exiting.")
+  
+  # check if headless was provided y/n
+  if HEADLESS != 'y' or HEADLESS != 'n':
+      exit("headless not provided as y/n. Exiting.")
+  
 
 def main():
   global usernames, post_content, times, dates
@@ -138,8 +170,8 @@ def batch_add_posts(page):
   
   # get total number of tweets available on loaded page
   new_posts = page.query_selector_all('article.css-175oi2r.r-18u37iz.r-1udh08x.r-1c4vpko.r-1c7gwzm.r-o7ynqc.r-6416eg.r-1ny4l3l.r-1loqt21')
-  print("Posts added in this batch", len(new_posts))
-
+  print("Posts added in this batch", len(new_posts), " (", datetime.now().hour, ":",  datetime.now().minute, ")")
+  
   for i in range(0, len(new_posts)):
     
     # check if post exists:
@@ -153,7 +185,7 @@ def batch_add_posts(page):
     username_element = new_posts[i].query_selector_all('a.css-175oi2r.r-1wbh5a2.r-dnmrzs.r-1ny4l3l.r-1loqt21')[1] # taking second hit, because first one is just account _name_ not _handle_
     post_text_element = new_posts[i].query_selector('div.css-146c3p1.r-8akbws.r-krxsd3.r-dnmrzs.r-1udh08x.r-bcqeeo.r-1ttztb7.r-qvutc0.r-37j5jr.r-a023e6.r-rjixqe.r-16dba41.r-bnwqim')
     time_element = new_posts[i].query_selector('time')
-
+    
     # Extract the content if the element exists
     if username_element:
       username = username_element.text_content()
@@ -178,6 +210,7 @@ def batch_add_posts(page):
 
 if __name__ == '__main__':
   initChecks()
+  cliChecks()
   main()
     
   time_taken = datetime.now() - startTime
@@ -191,4 +224,5 @@ if __name__ == '__main__':
   # Format the result
   formatted_time = f"{hours}h {minutes}m {seconds}s"
   print("Time taken:", formatted_time)
+  print(f"Time completed: {datetime.now().hour}h:{datetime.now().minute}m")
 # # # # # #  SCRIPT  END  # # # # #
