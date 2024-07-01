@@ -1,5 +1,6 @@
 # # # # # # Info and Setup # # # # # #
-# Only accepts posts in ENGLISH ("en"). No input sanitsation --> do not directly load into DBs
+# Only accepts posts in ENGLISH ("en").
+# Scraped tweets not sanitised. Only store in flat file. Sanitise with sentimentanalysis.py
 # 3 queries, 100 batches generates 3x .csvs of ~ 1500 unique posts in 30m
 # > =~ 50 unique posts / min
 # > highly contingent on how active your topics (queries) are, if slow-posting inactive searches then more redundant duplicates which are removed
@@ -18,8 +19,6 @@ from datetime import date, datetime
 from pathlib import Path
 import configparser
 import sys
-
-print(sys.argv)
 
 import pandas as pd
 from playwright.sync_api import sync_playwright # sync_playwright is actually a function, returns contxt manager
