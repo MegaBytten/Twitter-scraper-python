@@ -1,5 +1,6 @@
 from pathlib import Path
 import re, string
+from datetime import date, datetime
 
 import nltk
 from nltk.tokenize import word_tokenize
@@ -117,5 +118,13 @@ plt.grid(True)
 
 plt.savefig('twittersentiment.png')
 
+# SAVING CLEANED DF:
+
+# Create data folder to house data if not exists:
+Path("cleandata/").mkdir(parents=True, exist_ok=True)
+DATE = date.today().strftime("%Y%m%d")
+TIME = datetime.now().strftime("%H%M%S")
+TIMESTAMP = str(DATE) + "_" + str(TIME)
+
 #Save cleaned df
-df.to_csv('clean_twitterdata_sentiment.csv')
+df.to_csv(f"cleandata/twitter_sentiment_{TIMESTAMP}.csv", index=False)
