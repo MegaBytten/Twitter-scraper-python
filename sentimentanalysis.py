@@ -1,9 +1,16 @@
 from pathlib import Path
-from textblob import TextBlob
+import re, string
+
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+# ---------- Importing Data by iterating through data folder ---------- #
 # Get list of all files in data/ directory
 path = Path('./data')
 data_files = list(path.iterdir())
@@ -19,6 +26,7 @@ for i in range (1, len(data_files)):
     if not data_files[i].endswith('.csv'): continue # skip if not .csv file
     else: df = pd.concat([df, pd.read_csv(data_files[i])])
 
+# ---------- Data cleaning and pre-processing ---------- #
 # about 20% duplicate rate
 df = df.drop_duplicates()
 
@@ -29,8 +37,57 @@ df["hours"] = df["time"].apply(lambda time: time[0]+time[1]+":00")
 # Combine raw_date and hours into single "date" column - Rowwise operation
 df['date'] = df.apply(lambda row: f"{row['raw_date']} {row['hours']}", axis=1)
 
-# Calculating sentiment using TextBlob
-df["sentiment"] = df["post"].apply(lambda post: TextBlob(post).sentiment.polarity)
+#### Language Processing: Init / Requirements
+nltk.download('punkt') # used for word-tokenization, PUNKT also comes with sentence tokenization
+nltk.download('wordnet') # lexical db for english words - improved context
+nltk.download('averaged_perceptron_tagger') # - contexual POS tagger algorithm
+nltk.download('stopwords') # for removing filler words
+nltk.download('vader_lexicon') # for Vader's sentiment analysis
+
+#### Language Processing: Tokenization
+# breaking tweets into discernable words 
+
+# Function to clean noise
+def remove_noise(tweet_tokens, stop_words = nltk.corpus.stopwords.words('english')):
+    cleaned_tokens = []
+    for token, tag in nltk.pos_tag(tweet_tokens):
+        token = re.sub('[^A-Za-z0-9 ]+', '', token) # removes special characters except for ' ' (space)
+        
+        if tag.startswith("NN"):
+            pos = 'n'
+        elif tag.startswith('VB'):
+            pos = 'v'
+        else:
+            pos = 'a'
+        
+        lemmatizer = nltk.stem.wordnet.WordNetLemmatizer()
+        token = lemmatizer.lemmatize(token, pos)
+        
+        if len(token) > 0 and token not in string.punctuation and token.lower() not in stop_words:
+            cleaned_tokens.append(token.lower())
+    return cleaned_tokens
+
+# Function which runs senitment analysis - Requires remove_noise() function
+def sentiment_analysis(text):
+    tokenized_text = word_tokenize(text) # based on nltk.tokenize.word_tokenizer() using PUNKT algorithm
+    cleaned_tokenized_text = remove_noise(tokenized_text)
+    cleaned_tokenized_text = ' '.join(cleaned_tokenized_text) # combine back into single string
+    return cleaned_tokenized_text
+
+
+# apply sentiment_analysis function to every row's 'post' column - saving it to 'tokenized_text' column
+df['tokenized_text'] = df['post'].apply(sentiment_analysis) 
+
+
+sid = SentimentIntensityAnalyzer() # create Vader sentiment analysis
+# sentiment analysis using VADER
+df['sentiment'] = df.apply(
+    lambda row: sid.polarity_scores(row['tokenized_text'])['compound'], # get compound (overall) value from sentiment analysis
+    axis = 1 # apply function rowise, not columnwise
+)
+
+
+# ---------- GRAPHING ---------- #
 
 # Group by 'query' and 'date', and calculate mean and standard deviation for 'sentiment'
 grouped = df.groupby(['query', 'date'])['sentiment'].agg(
