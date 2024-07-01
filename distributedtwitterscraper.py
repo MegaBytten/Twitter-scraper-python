@@ -50,7 +50,6 @@ BOT_X_PSWD = ""
 # function checking if script was called with command-line arguments for automation
 def cliChecks():
   global QUERY, BOT_NUM, HEADLESS
-  print("hello!")
   
   if len(sys.argv) != 4:
     print("Incorrect file usage. Correct file usage: [/python3 distributedtwitterscraper.py query bot_number headless], where bot_number is a numeric value corresponding to config.cfg, and headless is y/n.")
