@@ -71,7 +71,7 @@ def cliChecks():
       exit("Bot number provided is not an integer. Exiting.")
   
   # check if headless was provided y/n (converted automatically to bool by python)
-  if type(headless_input) == type(True): HEADLESS == headless_input
+  if type(headless_input) == type(True): HEADLESS = headless_input
   else: exit("headless not provided as y/n. Exiting.")
   
 
