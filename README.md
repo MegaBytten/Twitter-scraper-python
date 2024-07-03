@@ -1,5 +1,5 @@
 # Twitter-scraper-python: a CS50x final project submission
-#### Video URL:
+#### Video URL: https://youtu.be/tjApwFCVDJY
 
 ## Twitter-scraper-python
 A highly configurable TWITTER-SCRAPING BOT using Python library Playwright. Readily deployable inlocal environment, exports .csv data, and contains an NLP sentiment analysis pipeline compatible with distributedtwitterscraper.py.
